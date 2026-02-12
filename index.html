@@ -10,11 +10,11 @@
 </head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ignatius' Periodic Table</title>
+    <title>ACS | Full Configuration Explorer</title>
     <style>
         :root {
             --bg: #ffffff; --text: #1a1a1a; --card: #ffffff; --border: #000000;
-            --primary: #00468b; --overlay: rgba(15, 23, 42, 0.5);
+            --primary: #00468b; --overlay: rgba(15, 23, 42, 0.6);
             /* ACS Official Color Palette */
             --alkali: #f9d423; --alkaline: #f39200; --transition: #009ee3;
             --post-trans: #9ea1a3; --metalloid: #546e7a; --nonmetal: #e3004f;
@@ -22,12 +22,12 @@
         }
         [data-theme="dark"] {
             --bg: #0b0e14; --text: #f0f0f0; --card: #1c1f26; --border: #444;
-            --overlay: rgba(0,0,0,0.8);
+            --overlay: rgba(0,0,0,0.85);
         }
 
         body, html {
             margin: 0; padding: 0; height: 100vh; width: 100vw;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
             background: var(--bg); color: var(--text);
             display: flex; flex-direction: column; overflow: hidden;
         }
@@ -35,82 +35,71 @@
         /* Centered Header Legend */
         .legend {
             display: flex; justify-content: center; align-items: center;
-            gap: 12px; padding: 12px; flex-wrap: wrap; 
+            gap: 12px; padding: 10px; flex-wrap: wrap; 
             background: var(--bg); border-bottom: 1px solid var(--border);
             font-size: 0.65rem; font-weight: bold;
         }
         .leg-item { display: flex; align-items: center; gap: 4px; }
         .swatch { width: 12px; height: 12px; border-radius: 2px; border: 1px solid #000; }
 
-        /* ABSOLUTE CENTERING FOR TABLE */
+        /* Absolute Center Table */
         .viewport {
-            flex: 1;
-            display: flex;
-            justify-content: center; /* Horizontal center */
-            align-items: center;     /* Vertical center */
-            padding: 20px;
-            box-sizing: border-box;
-            width: 100%;
+            flex: 1; display: flex; justify-content: center; align-items: center;
+            padding: 10px; box-sizing: border-box;
         }
 
         #periodic-table {
-            display: grid; 
-            grid-template-columns: repeat(18, 1fr);
-            grid-template-rows: repeat(10, 1fr); 
-            gap: 4px;
-            /* Scale based on screen size while remaining centered */
-            width: auto;
-            height: auto;
-            max-width: 95vw;
-            max-height: 80vh;
+            display: grid; grid-template-columns: repeat(18, 1fr);
+            grid-template-rows: repeat(10, 1fr); gap: 4px;
+            width: auto; height: auto; max-width: 95vw; max-height: 82vh;
         }
 
         .element {
-            aspect-ratio: 1 / 1; 
-            width: 55px; /* Fixed size for perfect alignment */
-            border: 1px solid var(--border); 
-            border-radius: 6px;
-            display: flex; flex-direction: column; 
-            padding: 3px; cursor: pointer;
-            transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
-            justify-content: space-between; 
-            box-sizing: border-box;
+            aspect-ratio: 1 / 1; width: 52px;
+            border: 1px solid var(--border); border-radius: 6px;
+            display: flex; flex-direction: column; padding: 3px; cursor: pointer;
+            transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            justify-content: space-between; box-sizing: border-box;
             background: var(--card); color: #000;
         }
-        
-        @media (max-height: 800px) { .element { width: 45px; } }
-        @media (max-height: 650px) { .element { width: 35px; } }
 
-        .element:hover { transform: scale(1.4); z-index: 100; box-shadow: 0 10px 25px rgba(0,0,0,0.4); border-color: #000; }
+        .element:hover { transform: scale(1.45); z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 2px solid #000; }
         .el-num { font-size: 0.55rem; font-weight: bold; }
         .el-sym { font-size: 1.1rem; font-weight: 900; text-align: center; line-height: 1; }
         .el-mass { font-size: 0.45rem; text-align: center; font-weight: bold; }
 
-        /* Modal & UI */
+        /* Modal & Detail Pane */
         .overlay {
-            position: fixed; inset: 0; background: var(--overlay); backdrop-filter: blur(8px);
+            position: fixed; inset: 0; background: var(--overlay); backdrop-filter: blur(10px);
             display: none; justify-content: center; align-items: center; z-index: 2000;
         }
         .modal {
-            background: var(--card); width: 85%; max-width: 800px;
-            border-radius: 15px; padding: 25px; display: grid;
-            grid-template-columns: 1fr 1.2fr; gap: 25px; border: 1px solid var(--border);
+            background: var(--card); width: 90%; max-width: 850px;
+            border-radius: 20px; padding: 30px; display: grid;
+            grid-template-columns: 1fr 1.3fr; gap: 30px; border: 1px solid var(--border);
         }
         .viz-box { 
-            background: #000; border-radius: 12px; aspect-ratio: 1/1; 
+            background: #000; border-radius: 15px; aspect-ratio: 1/1; 
             display: flex; flex-direction: column; align-items: center; justify-content: center;
+            border: 2px solid #333;
         }
         canvas { width: 100%; height: 100%; }
-        
+
+        .info-pane h2 { margin: 0; font-size: 2.4rem; font-weight: 900; }
         .tag { display: inline-block; padding: 4px 12px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; margin: 8px 0; border: 1px solid #000; color: #000; }
-        .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: rgba(0,0,0,0.05); padding: 10px; border-radius: 8px; margin: 10px 0; }
-        .stat label { display: block; font-size: 0.55rem; color: #666; font-weight: bold; text-transform: uppercase; }
-        .stat span { font-weight: bold; font-size: 0.9rem; }
-        .ion-pill { background: #eee; border: 1px solid #999; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; cursor: pointer; color: #000; margin: 2px; }
+        
+        .stats-box { background: rgba(0,0,0,0.05); padding: 15px; border-radius: 12px; margin: 15px 0; }
+        .stat-line { margin-bottom: 10px; }
+        .stat-line label { display: block; font-size: 0.6rem; color: var(--primary); font-weight: 900; text-transform: uppercase; }
+        .stat-line span { font-weight: 700; font-size: 0.95rem; line-height: 1.4; word-break: break-all; }
+        .config-text { font-family: 'Courier New', Courier, monospace; letter-spacing: 0.5px; color: var(--text); }
+
+        .ion-shelf { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+        .ion-pill { background: #eee; border: 1px solid #bbb; padding: 5px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; cursor: pointer; color: #000; }
         .ion-pill:hover { background: var(--primary); color: white; }
         
         .theme-switch { position: fixed; bottom: 15px; right: 15px; }
-        #theme-btn { padding: 10px 18px; border-radius: 50px; cursor: pointer; font-weight: bold; background: var(--primary); color: white; border: none; }
+        #theme-btn { padding: 10px 20px; border-radius: 50px; cursor: pointer; font-weight: bold; background: var(--primary); color: white; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
     </style>
 </head>
 <body>
@@ -121,27 +110,34 @@
     <div id="periodic-table"></div>
 </div>
 
-<div class="theme-switch"><button id="theme-btn" onclick="toggleTheme()">🌓 THEME</button></div>
+<div class="theme-switch"><button id="theme-btn" onclick="toggleTheme()">🌓 TOGGLE MODE</button></div>
 
 <div class="overlay" id="overlay">
     <div class="modal">
         <div class="viz-box">
             <canvas id="atom-canvas" width="400" height="400"></canvas>
-            <div id="e-label" style="color: #00b5e2; font-family: monospace; font-size: 0.8rem; margin: 5px 0;"></div>
+            <div id="e-label" style="color: #48cae4; font-family: monospace; font-size: 0.9rem; margin-top: 10px;"></div>
         </div>
         <div class="info-pane">
-            <h2 id="m-name" style="margin:0; font-size: 2.2rem; font-weight: 900;"></h2>
+            <h2 id="m-name" style="margin:0;"></h2>
             <div id="m-cat" class="tag"></div>
-            <div class="stats">
-                <div class="stat"><label>Electron Config</label><span id="m-config"></span></div>
-                <div class="stat"><label>Atomic Mass</label><span id="m-mass"></span></div>
-                <div class="stat"><label>Protons</label><span id="m-protons"></span></div>
-                <div class="stat"><label>Group Family</label><span id="m-group"></span></div>
+            
+            <div class="stats-box">
+                <div class="stat-line">
+                    <label>Full Electronic Configuration</label>
+                    <span id="m-full-config" class="config-text"></span>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="stat-line"><label>Atomic Mass</label><span id="m-mass"></span></div>
+                    <div class="stat-line"><label>Oxidation States</label><span id="m-ions-txt"></span></div>
+                </div>
             </div>
-            <label style="font-size: 0.65rem; font-weight: bold; color: var(--primary);">SELECT OXIDATION STATE (ION):</label>
-            <div class="ion-shelf" id="m-ions" style="display: flex; flex-wrap: wrap;"></div>
-            <p id="m-use" style="font-size: 0.8rem; line-height: 1.4; margin-top: 15px; opacity: 0.8;"></p>
-            <button onclick="closeModal()" style="width: 100%; padding: 12px; background: #1a1a1a; color: white; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px;">CLOSE</button>
+
+            <label style="font-size: 0.65rem; font-weight: 900; color: var(--primary);">BOHR MODEL ION STATE:</label>
+            <div class="ion-shelf" id="m-ions-btns"></div>
+
+            <p id="m-use" style="font-size: 0.85rem; line-height: 1.5; margin-top: 20px; opacity: 0.8; font-style: italic;"></p>
+            <button onclick="closeModal()" style="width: 100%; padding: 12px; background: #222; color: white; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; margin-top: 15px;">CLOSE EXPLORER</button>
         </div>
     </div>
 </div>
@@ -149,18 +145,52 @@
 <script>
     const symbols = ["","H","He","Li","Be","B","C","N","O","F","Ne","Na","Mg","Al","Si","P","S","Cl","Ar","K","Ca","Sc","Ti","V","Cr","Mn","Fe","Co","Ni","Cu","Zn","Ga","Ge","As","Se","Br","Kr","Rb","Sr","Y","Zr","Nb","Mo","Tc","Ru","Rh","Pd","Ag","Cd","In","Sn","Sb","Te","I","Xe","Cs","Ba","La","Ce","Pr","Nd","Pm","Sm","Eu","Gd","Tb","Dy","Ho","Er","Tm","Yb","Lu","Hf","Ta","W","Re","Os","Ir","Pt","Au","Hg","Tl","Pb","Bi","Po","At","Rn","Fr","Ra","Ac","Th","Pa","U","Np","Pu","Am","Cm","Bk","Cf","Es","Fm","Md","No","Lr","Rf","Db","Sg","Bh","Hs","Mt","Ds","Rg","Cn","Nh","Fl","Mc","Lv","Ts","Og"];
 
-    const library = {
-        1: {m:"1.008", c:"1s¹", i:[0, 1, -1], u:"Hydrogen: Primary fuel for stars and rocket engines."},
-        6: {m:"12.011", c:"[He] 2s² 2p²", i:[0, 2, 4, -4], u:"Carbon: Fundamental building block of all known life."},
-        11: {m:"22.989", c:"[Ne] 3s¹", i:[0, 1], u:"Sodium: Vital for nerve function and common table salt."},
-        19: {m:"39.098", c:"[Ar] 4s¹", i:[0, 1], u:"Potassium: Essential electrolyte and plant nutrient."},
-        25: {m:"54.938", c:"[Ar] 3d⁵ 4s²", i:[0, 2, 3, 4, 6, 7], u:"Manganese: Critical for stainless steel production."},
-        26: {m:"55.845", c:"[Ar] 3d⁶ 4s²", i:[0, 2, 3, 6], u:"Iron: Most abundant metal on Earth; essential for blood hemoglobin."},
-        29: {m:"63.546", c:"[Ar] 3d¹⁰ 4s¹", i:[0, 1, 2], u:"Copper: Primary conductor in electrical wiring."},
-        30: {m:"65.38", c:"[Ar] 3d¹⁰ 4s²", i:[0, 2], u:"Zinc: Anti-corrosion coating for galvanized steel."},
-        79: {m:"196.97", c:"[Xe] 4f¹⁴ 5d¹⁰ 6s¹", i:[0, 1, 3], u:"Gold: Corrosion-resistant precious metal used in electronics."},
-        92: {m:"238.03", c:"[Rn] 5f³ 6d¹ 7s²", i:[0, 3, 4, 5, 6], u:"Uranium: Heavy element used as fuel in nuclear reactors."}
+    // Precise scientific data for key elements + Generative Logic for others
+    const elementLibrary = {
+        1: {m:"1.008", i:[0, 1, -1], u:"The most abundant element; fuel for stars."},
+        6: {m:"12.011", i:[0, 4, 2, -4], u:"Basis of all life and organic chemistry."},
+        11: {m:"22.989", i:[0, 1], u:"Vital for nerve signals and table salt."},
+        19: {m:"39.098", i:[0, 1], u:"Potassium: Crucial electrolyte for biological cells."},
+        20: {m:"40.078", i:[0, 2], u:"Calcium: Essential for bone structure and cement."},
+        25: {m:"54.938", i:[0, 2, 3, 4, 6, 7], u:"Manganese: Essential for hardening steel alloys."},
+        26: {m:"55.845", i:[0, 2, 3, 6], u:"Iron: Most common element on earth by mass."},
+        79: {m:"196.97", i:[0, 1, 3], u:"Gold: Highly prized for jewelry and electronics."},
+        92: {m:"238.03", i:[0, 3, 4, 5, 6], u:"Uranium: High-density fuel for nuclear fission."}
     };
+
+    // --- FULL CONFIGURATION ENGINE ---
+    function getFullConfig(n) {
+        const order = [
+            {s:"1s", m:2}, {s:"2s", m:2}, {s:"2p", m:6}, {s:"3s", m:2}, {s:"3p", m:6},
+            {s:"4s", m:2}, {s:"3d", m:10}, {s:"4p", m:6}, {s:"5s", m:2}, {s:"4d", m:10},
+            {s:"5p", m:6}, {s:"6s", m:2}, {s:"4f", m:14}, {s:"5d", m:10}, {s:"6p", m:6},
+            {s:"7s", m:2}, {s:"5f", m:14}, {s:"6d", m:10}, {s:"7p", m:6}
+        ];
+        
+        // Exceptions handling (Chromium, Copper, Silver, Gold, etc.)
+        const exceptions = {
+            24: "1s² 2s² 2p⁶ 3s² 3p⁶ 4s¹ 3d⁵",
+            29: "1s² 2s² 2p⁶ 3s² 3p⁶ 4s¹ 3d¹⁰",
+            47: "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s¹ 4d¹⁰",
+            79: "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s¹ 4f¹⁴ 5d¹⁰"
+        };
+        if(exceptions[n]) return exceptions[n];
+
+        let res = [];
+        let rem = n;
+        for (let orb of order) {
+            if (rem <= 0) break;
+            let take = Math.min(rem, orb.m);
+            res.push(`${orb.s}${toSuperscript(take)}`);
+            rem -= take;
+        }
+        return res.join(" ");
+    }
+
+    function toSuperscript(num) {
+        const map = {"0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹"};
+        return num.toString().split('').map(c => map[c] || c).join('');
+    }
 
     const categories = { alkali:"Alkali Metal", alkaline:"Alkaline Earth", transition:"Transition Metal", "post-trans":"Post-Transition", metalloid:"Metalloid", nonmetal:"Nonmetal", noble:"Noble Gas", halogen:"Halogen", lanthanide:"Lanthanide", actinide:"Actinide" };
 
@@ -169,14 +199,13 @@
 
     function init() {
         const leg = document.getElementById('legend');
-        Object.entries(categories).forEach(([k,v]) => {
-            leg.innerHTML += `<div class="leg-item"><div class="swatch" style="background:var(--${k})"></div>${v}</div>`;
-        });
+        Object.entries(categories).forEach(([k,v]) => leg.innerHTML += `<div class="leg-item"><div class="swatch" style="background:var(--${k})"></div>${v}</div>`);
 
         const table = document.getElementById('periodic-table');
         for(let n=1; n<=118; n++) {
             let r, c, cat = "transition";
             
+            // Standard IUPAC Placement
             if(n === 1) { r=1; c=1; cat="nonmetal"; }
             else if(n === 2) { r=1; c=18; cat="noble"; }
             else if(n >= 57 && n <= 71) { r=9; c=n-53; cat="lanthanide"; }
@@ -202,7 +231,7 @@
                 }
             }
 
-            const data = library[n] || { m:(n*2.1).toFixed(1), c:"N/A", i:(c===1?[0,1]:(c===2?[0,2]:[0,2,3])), u:"Scientific laboratory research element." };
+            const data = elementLibrary[n] || { m:(n*2.1).toFixed(1), i:[0, 2, 3], u:"Scientific laboratory research element." };
             
             const div = document.createElement('div');
             div.className = 'element';
@@ -220,13 +249,12 @@
         document.getElementById('m-name').innerText = symbols[n] + " (" + n + ")";
         document.getElementById('m-cat').innerText = categories[cat];
         document.getElementById('m-cat').style.background = `var(--${cat})`;
-        document.getElementById('m-config').innerText = data.c;
+        document.getElementById('m-full-config').innerText = getFullConfig(n);
         document.getElementById('m-mass').innerText = data.m;
-        document.getElementById('m-protons').innerText = n;
-        document.getElementById('m-group').innerText = categories[cat];
+        document.getElementById('m-ions-txt').innerText = data.i.join(", ");
         document.getElementById('m-use').innerText = data.u;
 
-        const shelf = document.getElementById('m-ions');
+        const shelf = document.getElementById('m-ions-btns');
         shelf.innerHTML = '';
         data.i.forEach(i => {
             const b = document.createElement('div'); b.className = 'ion-pill';
@@ -245,22 +273,22 @@
         function draw() {
             ctx.clearRect(0,0,400,400);
             const eCount = Math.max(0, protons + ionDiff);
-            document.getElementById('e-label').innerText = `Electrons: ${eCount}`;
+            document.getElementById('e-label').innerText = `Protons: ${protons} | Electrons: ${eCount}`;
             
-            ctx.beginPath(); ctx.arc(200,200,22,0,7); ctx.fillStyle="#e3004f"; ctx.fill();
-            ctx.fillStyle="white"; ctx.font="bold 15px sans-serif"; ctx.textAlign="center";
-            ctx.fillText(protons + "+", 200, 205);
+            ctx.beginPath(); ctx.arc(200,200,24,0,Math.PI*2); ctx.fillStyle="#e3004f"; ctx.fill();
+            ctx.fillStyle="white"; ctx.font="bold 16px sans-serif"; ctx.textAlign="center";
+            ctx.fillText(protons + "+", 200, 206);
 
             const shells = [2, 8, 18, 32, 50]; let rem = eCount;
             shells.forEach((max, i) => {
                 if(rem <= 0) return;
                 const count = Math.min(rem, max); rem -= count;
                 const rad = 65 + (i * 35);
-                ctx.beginPath(); ctx.arc(200,200,rad,0,7); ctx.strokeStyle="rgba(255,255,255,0.2)"; ctx.stroke();
+                ctx.beginPath(); ctx.arc(200,200,rad,0,Math.PI*2); ctx.strokeStyle="rgba(255,255,255,0.2)"; ctx.stroke();
                 for(let j = 0; j < count; j++) {
                     const rot = t * (1 - i*0.1) + (j * Math.PI * 2 / count);
-                    ctx.beginPath(); ctx.arc(200 + Math.cos(rot)*rad, 200 + Math.sin(rot)*rad, 6, 0, 7);
-                    ctx.fillStyle="#00b5e2"; ctx.fill();
+                    ctx.beginPath(); ctx.arc(200 + Math.cos(rot)*rad, 200 + Math.sin(rot)*rad, 6, 0, Math.PI*2);
+                    ctx.fillStyle="#48cae4"; ctx.fill();
                 }
             });
             t += 0.02; animId = requestAnimationFrame(draw);
